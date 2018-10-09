@@ -1,0 +1,11 @@
+---
+title: "Homework 1"
+author: "Kenneth Ruiter"
+date: "October 8, 2018"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
