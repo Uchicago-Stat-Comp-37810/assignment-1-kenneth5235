@@ -2,10 +2,46 @@
 title: "Homework 1"
 author: "Kenneth Ruiter"
 date: "October 8, 2018"
+header-includes:
+  \usepackage{enumerate}
 output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
 ```
+\newpage
 
+# For loops
+
+## Exercise 2
+
+\begin{enumerate}[(a)]
+  \item
+```{r Fibonnaci}
+n <- 30
+Fibonacci <- numeric(n)
+Fibonacci[1] <- Fibonacci[2] <- 1
+for (i in 3:n) {
+  Fibonacci[i] <- Fibonacci[i-2] + Fibonacci[i-1]
+}
+
+convergingsequence <- Fibonacci[2:n]/Fibonacci[1:(n-1)]
+```
+The first 29 elements of the sequence of ratios of the form $f_n/f_{n-1}$ is given by: \\
+\\
+`r convergingsequence` \\
+\\
+Note that the sequence seems to be converging to about `r convergingsequence[29]`.
+  
+  \item
+The golden ratio is $\frac{1+\sqrt{5}}{2} \approx$ `r (1+sqrt(5))/2`. This does seem to be the value that the sequence in part (a) is converging to. We will prove that this is the case. \\
+\\
+Let $n > 4$. Then 
+$$\frac{f_n}{f_{n-1}} = \frac{f_{n-1}+f_{n-2}}{f_{n-1}} = 1 + \frac{f_{n-2}}{f_{n-2}+f_{n-3}} = 1+\frac{1}{\frac{f_{n-2}+f_{n-3}}{f_{n-2}}}.$$ 
+Now note that we can rewrite the denominator of the final fraction, $\frac{f_{n-2}+f_{n-3}}{f_{n-2}}$, the same way as the second fraction, $\frac{f_{n-1}+f_{n-2}}{f_{n-1}}$, and as long as $n$ is big enough we can continue doing this. Thus if we are looking at the limit for $n$ to $\infty$, we can express the ratio as an "infinite fraction".
+$$\frac{f_n}{f_{n-1}} = \frac{1}{1+\frac{1}{1+\frac{1}{\dots}}} $$
+Now all that remains to be show is that this infinite fraction is equal to the golden ratio. To do this, let us first assign the value $x$ to it, such that $x = \frac{1}{1+\frac{1}{1+\frac{1}{\dots}}}$. However, then $1 + \frac{1}{x} = \frac{1}{1+\frac{1}{1+\frac{1}{1+\frac{1}{\dots}}}} = x$. Now we can simply compute $x$ from this quadratic equation.
+$$1 + \frac{1}{x} = x \implies x^2 - x - 1=0 \implies x = \frac{1 \pm \sqrt{1-4*1*-1}}{2*1} = \frac{1\pm \sqrt{5}}{2}.$$
+Noting that $x$ should be positive, finally proves that indeed $\frac{f_n}{f_{n-1}} \rightarrow \frac{1+ \sqrt{5}}{2}$, as $n \rightarrow \infty$.
+\end{enumerate}
