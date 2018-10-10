@@ -172,3 +172,41 @@ while(abs(i - iOld) > 0.000001){
 }
 ```
 Again starting with $i=0.006$, we find our desired estimate of $i$ in `r iterations` iterations.
+
+\newpage
+# Break statements
+
+## Exercise 2
+
+\begin{enumerate}[(a)]
+  \item
+Done.
+
+  \item
+Let $p \geq \sqrt{n}$. Now consider any integer $q$, such that $p \leq q \leq n$. \\
+If $q$ is prime, then it is still in $sieve$ as there cannot have been any number $\tilde{p}$ in $sieve$ smaller than $q$, such that $q = 0 \mod \tilde{p}$, by the definition of a prime number. \\
+If $q$ is not prime, then there must exist integers $a,b \neq 1$ such that $q = a*b$. Now suppose $a,b > \sqrt{n}$. Then $q = a*b > \sqrt{n}*\sqrt{n} = n$, which contradicts our assumption, meaning that at least one of $a$ and $b$ must be smaller than or equal to $\sqrt{n}$. Without loss of generality, assume that $a \leq \sqrt{n}$. Now if $a$ is prime, then at some point we had that $p=a$, at which point then $q = 0 \mod p$, so $q$ can currently not be an element of $sieve$ anymore. If $a$ is not prime, then there must have been some point where $p = \tilde{a}$ where $a = 0 \mod p$. But then also $q = a*b = 0 \mod p$, meaning $q$ can currently still not be an element of $sieve$. Therefore all elements left in $sieve$ once $p \geq \sqrt{n}$ must be prime.
+
+  \item
+```{r Eratosthenes revised, echo=TRUE}
+Erastosthenes <- function(n) {
+  if(n >= 2) {
+    sieve <- seq(2,n)
+    primes <- c()
+    repeat{
+      p <- sieve[1]
+      if(p >= sqrt(n)){
+        primes <- c(primes, sieve)
+        break
+      }
+      primes <- c(primes,p)
+      sieve <- sieve[(sieve %% p) != 0]
+    }
+    return(primes)
+  } else {
+    stop("Input value of n should be at least 2.")
+  }
+}
+```
+
+\end{enumerate}
