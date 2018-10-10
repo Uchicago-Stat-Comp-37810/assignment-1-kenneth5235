@@ -102,6 +102,7 @@ Checking in R gives us that answer = (`r answer`). Note here that the last eleme
 
 \end{enumerate}
 
+\newpage
 # If statements
 
 ## Exercise 4
@@ -133,3 +134,41 @@ mortgage <- function(n, P, open){
   return(R)
 }
 ```
+
+\newpage
+# While statements
+
+## Exercise 2
+
+```{r Fibonacci revised, echo=TRUE}
+Fibonacci <- c(1,1)
+while(Fibonacci[length(Fibonacci)] + Fibonacci[length(Fibonacci)-1] < 300){
+  Fibonacci <- c(Fibonacci, Fibonacci[length(Fibonacci)] + Fibonacci[length(Fibonacci)-1])
+}
+```
+
+## Exercise 4
+
+```{r car dealer, echo=TRUE}
+i <- 0.006
+iOld <- -1
+while(abs(i - iOld) > 0.000001){
+  iOld <- i
+  i <- (1-(1+i)^(-20))/19
+}
+```
+Using a starting guess of $i=0.006$ results in an iteratively calculated value of $i=$ `r i`. The result will be about the same (with a maximal difference of $0.0000001$), for any starting value that is not close to $0$. This is the case as $0$ is also a fixed point, however it is unstable, unlike the value we find for $i$. Because of our initial choice of $iOld = -1$, a starting value close to $-1$ would also not give a desired result, however a negative guess for $i$ would not make sense for this example anyway.
+
+## Exercise 5
+
+```{r car dealer revised, echo=TRUE}
+i <- 0.006
+iOld <- -1
+iterations <- 0
+while(abs(i - iOld) > 0.000001){
+  iterations <- iterations + 1
+  iOld <- i
+  i <- (1-(1+i)^(-20))/19
+}
+```
+Again starting with $i=0.006$, we find our desired estimate of $i$ in `r iterations` iterations.
