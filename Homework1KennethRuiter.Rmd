@@ -44,6 +44,7 @@ $$\frac{f_n}{f_{n-1}} = \frac{1}{1+\frac{1}{1+\frac{1}{\dots}}} $$
 Now all that remains to be show is that this infinite fraction is equal to the golden ratio. To do this, let us first assign the value $x$ to it, such that $x = \frac{1}{1+\frac{1}{1+\frac{1}{\dots}}}$. However, then $1 + \frac{1}{x} = \frac{1}{1+\frac{1}{1+\frac{1}{1+\frac{1}{\dots}}}} = x$. Now we can simply compute $x$ from this quadratic equation.
 $$1 + \frac{1}{x} = x \implies x^2 - x - 1=0 \implies x = \frac{1 \pm \sqrt{1-4*1*-1}}{2*1} = \frac{1\pm \sqrt{5}}{2}.$$
 Noting that $x$ should be positive, finally proves that indeed $\frac{f_n}{f_{n-1}} \rightarrow \frac{1+ \sqrt{5}}{2}$, as $n \rightarrow \infty$.
+
 \end{enumerate}
 
 ## Exercise 3
@@ -100,3 +101,35 @@ for(j in 1:15){
 Checking in R gives us that answer = (`r answer`). Note here that the last element of the vector is the same as the first. By just inspecting the sequence of numbers, the pattern is not easy to see, however if we were to know (or guess) that the next element in the sequence is only dependent on the element preceding it, then we can predict that the successive element of the sequence is $21$, as this is also the value of the second element.
 
 \end{enumerate}
+
+# If statements
+
+## Exercise 4
+
+```{r interest, echo=TRUE}
+interest <- function(P, periods){
+  if(periods <= 3){
+    i <- 0.04 #Annual interest for a term 3 years or less
+  } else {
+    i <- 0.05 #Annual interest for a term more than 3 years
+  }
+  
+  I <- P*((1+i)^periods - 1)
+  return(I)
+}
+```
+
+## Exercise 5
+
+```{r mortgage payment, echo=TRUE}
+mortgage <- function(n, P, open){
+  if(open){
+    i <- 0.005 #Interest rate when the morgage term is open
+  } else {
+    i <- 0.004 #Interest rate when the morgage term is closed
+  }
+  
+  R <- P*i/(1-(1+i)^(-n))
+  return(R)
+}
+```
