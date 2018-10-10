@@ -45,3 +45,58 @@ Now all that remains to be show is that this infinite fraction is equal to the g
 $$1 + \frac{1}{x} = x \implies x^2 - x - 1=0 \implies x = \frac{1 \pm \sqrt{1-4*1*-1}}{2*1} = \frac{1\pm \sqrt{5}}{2}.$$
 Noting that $x$ should be positive, finally proves that indeed $\frac{f_n}{f_{n-1}} \rightarrow \frac{1+ \sqrt{5}}{2}$, as $n \rightarrow \infty$.
 \end{enumerate}
+
+## Exercise 3
+
+\begin{enumerate}[(a)]
+  \item
+We are taking $0$ and adding the numbers $1,2,3,4$ and $5$ to it to obtain $0+1+2+3+4+5=15$.
+```{r}
+answer <- 0
+for (j in 1:5) {
+  answer <- answer + j
+}
+```
+Checking in R gives us that answer = `r answer`.
+
+  \item
+We begin with an empty set and then add the values $1$ to $5$ as elements to it, leaving us with the vector $(1,2,3,4,5)$.
+```{r}
+answer <- NULL
+for(j in 1:5){
+  answer <- c(answer,j)
+}
+```
+Checking in R gives us that answer = (`r answer`).
+
+  \item
+Instead of beginning with an empty set, we now start with the value $0$. Adding the values $1$ to $5$ as elements results in the vector $(0,1,2,3,4,5)$.
+```{r}
+answer <- 0
+for(j in 1:5){
+  answer <- c(answer,j)
+}
+```
+Checking in R gives us that answer = (`r answer`).
+
+  \item
+This time we are multiplying the answer by $1$ to $5$, so that the result is $1*1*2*3*4*5 = 120$.
+```{r}
+answer <- 1
+for (j in 1:5) {
+  answer <- answer * j
+}
+```
+Checking in R gives us that answer = `r answer`.
+
+  \item
+Now we are creating a vector of $16$ elements, starting with $3$, where each next element is given by \linebreak $7*$(the last element) mod $31$. This gives the vector $(3,21,23,6,11,15,12,22,30,24,13,29,17,26,27,3)$.
+```{r}
+answer <- 3
+for(j in 1:15){
+  answer <- c(answer, (7*answer[j]) %% 31)
+}
+```
+Checking in R gives us that answer = (`r answer`). Note here that the last element of the vector is the same as the first. By just inspecting the sequence of numbers, the pattern is not easy to see, however if we were to know (or guess) that the next element in the sequence is only dependent on the element preceding it, then we can predict that the successive element of the sequence is $21$, as this is also the value of the second element.
+
+\end{enumerate}
