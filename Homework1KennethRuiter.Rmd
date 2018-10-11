@@ -1,7 +1,7 @@
 ---
 title: "Homework 1"
-author: "Kenneth Ruiter"
-date: "October 8, 2018"
+author: "Kenneth Ruiter (12206909)"
+date: "October 10, 2018"
 header-includes:
   \usepackage{enumerate}
   \newcommand{\benum}{\begin{enumerate}}
@@ -43,7 +43,9 @@ Now note that we can rewrite the denominator of the final fraction, $\frac{f_{n-
 $$\frac{f_n}{f_{n-1}} = \frac{1}{1+\frac{1}{1+\frac{1}{\dots}}} $$
 Now all that remains to be show is that this infinite fraction is equal to the golden ratio. To do this, let us first assign the value $x$ to it, such that $x = \frac{1}{1+\frac{1}{1+\frac{1}{\dots}}}$. However, then $1 + \frac{1}{x} = \frac{1}{1+\frac{1}{1+\frac{1}{1+\frac{1}{\dots}}}} = x$. Now we can simply compute $x$ from this quadratic equation.
 $$1 + \frac{1}{x} = x \implies x^2 - x - 1=0 \implies x = \frac{1 \pm \sqrt{1-4*1*-1}}{2*1} = \frac{1\pm \sqrt{5}}{2}.$$
-Noting that $x$ should be positive, finally proves that indeed $\frac{f_n}{f_{n-1}} \rightarrow \frac{1+ \sqrt{5}}{2}$, as $n \rightarrow \infty$.
+Noting that $x$ should be positive, finally proves that indeed $\frac{f_n}{f_{n-1}} \rightarrow \frac{1+ \sqrt{5}}{2}$, as $n \rightarrow \infty$. \newline
+\newline
+As a fun sidenote, nowhere in the proof were the starting values of the Fibonnaci series used. Thus not just this series, but any series that stars with two integers (at least one unequal $0$), and the rest of the elements made with the same rules as the Fibonnaci series, will have this same property of the ratio between succeeding numbers converging to the golden ratio.
 
 \eenum
 
@@ -255,3 +257,94 @@ bisection.zero <- function(f, x1, x2, tolerance = 10^-8){
   }
 }
 ```
+
+\newpage
+# Putting it all together
+
+## Exercise 1
+We have that $10! = `r factorial(10)`$, $50! = `r factorial(50)`$ and $100! = `r factorial(100)`$. When trying to compute the value of $1000!$, R gives an error as it is simply too large.
+
+## Exercise 2
+
+\benum[(a)]
+  \item
+```{r binomial, echo=TRUE}
+binom.coef <- function(n,m){
+  answer <- factorial(n)/(factorial(m)*factorial(n-m))
+  return(answer)
+}
+```
+
+  \item
+We have that $\binom{4}{2} = `r binom.coef(4,2)`$ and $\binom{50}{20} = `r binom.coef(50,20)`$. Again, R cannot compute the value of $\binom{5000}{2000}$ using this function, as it requires the factorial of these numbers and they are too large.
+
+  \item
+```{r binomial improved, echo=TRUE}
+binom.coef <- function(n,m){
+  v1 <- log(1:n)
+  v2 <- log(1:m)
+  v3 <- log(1:(n-m))
+  answer <- exp(sum(v1) - sum(v2) - sum(v3))
+  return(answer)
+}
+```
+
+  \item
+Now, $\binom{4}{2} = `r binom.coef(4,2)`$ and $\binom{50}{20} = `r binom.coef(50,20)`$, as before. Sadly, while the giant number of $5000!$ is no longer an issue, the value of $\binom{5000}{2000}$ itself is still too big for R (as the output is $\binom{5000}{2000} = `r binom.coef(5000,2000)`$).
+\eenum
+
+\newpage
+# Chapter 4 exercises
+
+## Exercise 1
+
+As mentioned in the exercise, the pattern is indeed striking: \newline
+```{r RANDU}
+n <- 3000000
+results <- numeric(n)
+x <- 123
+for(i in 1:n) {
+  x <- (65539*x) %% (2^31)
+  results[i] <- x/(2^31)
+}
+
+results.round <- round(results,3)
+results.matrix <- matrix(results.round, ncol = 3, byrow = TRUE)
+
+par(mfrow = c(3,3))
+
+for (i in (1:9)/10) {
+  x <- i
+  results.matrix.rowx <- results.matrix[results.matrix[,1] == x,]
+  plot(results.matrix.rowx[,2], results.matrix.rowx[,3], main = paste("x = ",i) ,xlab = "column 2", ylab = "column 3")
+}
+```
+
+## Exercise 2
+
+```{r directpoly, echo=TRUE}
+directpoly <- function(x, vec.coef){
+  n <- length(vec.coef)
+  powers <- c()
+  for(i in 1:n){
+    powers[i] <- x^(i-1)
+  }
+  evaluation <- sum(vec.coef * powers)
+  return(evaluation)
+}
+```
+
+## Exercise 3
+
+```{r hornerpoly, echo=TRUE}
+hornerpoly <- function(x, vec.coef){
+  n <- length(vec.coef)
+  a <- c(numeric(n-1), vec.coef[n])
+  for (i in (n-1):1) {
+    a[i] <- a[i+1]*x + vec.coef[i]
+  }
+  return(a[1])
+}
+```
+
+To test the function, we try the polynomial $P(x) = 3x^2 + 2x + 1$ evaluated at $x=2$. This should result in $3*2^2 + 2*2 + 1 = 17$. Indeed, the function $hornerpoly(2, c(1,2,3))$ does output `r hornerpoly(2, c(1,2,3))`.
