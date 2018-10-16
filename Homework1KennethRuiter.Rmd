@@ -1,7 +1,7 @@
 ---
 title: "Homework 1"
 author: "Kenneth Ruiter (12206909)"
-date: "October 10, 2018"
+date: "October 16, 2018"
 header-includes:
   \usepackage{enumerate}
   \newcommand{\benum}{\begin{enumerate}}
@@ -262,35 +262,115 @@ bisection.zero <- function(f, x1, x2, tolerance = 10^-8){
 # Putting it all together
 
 ## Exercise 1
-We have that $10! = `r factorial(10)`$, $50! = `r factorial(50)`$ and $100! = `r factorial(100)`$. When trying to compute the value of $1000!$, R gives an error as it is simply too large.
+```{r sorting, echo=TRUE}
+mergesort <- function (x, decreasing = FALSE) {
+  # Check for a vector that doesn't need sorting
+  len <-length(x)
+  if (len < 2) result <- x
+  else {
+    # 2: sort x into result
+    # 2.1: split x in half
+    y <- x[1:(len %/% 2)]
+    z <- x[(len %/% 2 + 1):len]
+    # 2.2: sort y and z
+    y <- mergesort(y)
+    z <- mergesort(z)
+    # 2.3: merge y and z into a sorted result
+    result <- c()
+    # 2.3.1: while (some are left in both piles)
+    while (min(length(y), length(z)) > 0) {
+      # 2.3.2: put the smallest first element on the end
+      # 2.3.3: remove it from y or z
+      if (y[1] < z[1]) {
+        result <- c(result, y[1])
+        y <- y[-1]
+      } else {
+        result <- c(result, z[1])
+        z <- z[-1]
+      }
+    }
+    # 2.3.4: put the leftovers onto the end of result
+    if (length(y) > 0)
+      result <- c(result, y)
+    else
+      result <- c(result, z)
+  }
+  # Modification to include decreasing
+  if(decreasing){
+    decreasingresult <- rep(0,length(result))
+    for(i in 1:length(result)){
+      decreasingresult[i] <- result[length(result)+1-i]
+    }
+    result <- decreasingresult
+  }
+  return(result)
+}
+```
 
 ## Exercise 2
 
 \benum[(a)]
   \item
-```{r binomial, echo=TRUE}
-binom.coef <- function(n,m){
-  answer <- factorial(n)/(factorial(m)*factorial(n-m))
-  return(answer)
+```{r Newton, echo=TRUE}
+findzero <- function(f, g, fx, fy, gx, gy, x0, y0) {
+  x <- x0
+  y <- y0
+  tolerance <- 0.000001
+  while(abs(f(x,y)) > tolerance || abs(g(x,y)) > tolerance) {
+    d <- fx(x,y)*gy(x,y) - fy(x,y)*gx(x,y)
+    if(d == 0){
+      stop("Try different starting values")
+    }
+    newx <- x - (gy(x,y)*f(x,y) - fy(x,y)*g(x,y))/d
+    newy <- y - (fx(x,y)*g(x,y) - gx(x,y)*f(x,y))/d
+    x <- newx
+    y <- newy
+  }
+  return(c(x,y))
 }
 ```
 
   \item
-We have that $\binom{4}{2} = `r binom.coef(4,2)`$ and $\binom{50}{20} = `r binom.coef(50,20)`$. Again, R cannot compute the value of $\binom{5000}{2000}$ using this function, as it requires the factorial of these numbers and they are too large.
+```{r testing Newton}
+f <- function(x,y) {
+  return(x+y)
+}
 
-  \item
-```{r binomial improved, echo=TRUE}
-binom.coef <- function(n,m){
-  v1 <- log(1:n)
-  v2 <- log(1:m)
-  v3 <- log(1:(n-m))
-  answer <- exp(sum(v1) - sum(v2) - sum(v3))
-  return(answer)
+g <- function(x,y) {
+  return(x^2 + 2*y^2 - 2)
+}
+
+fx <- function(x,y) {
+  return(1)
+}
+
+fy <- function(x,y) {
+  return(1)
+}
+
+gx <- function(x,y) {
+  return(2*x)
+}
+
+gy <- function(x,y) {
+  return(4*y)
 }
 ```
+Applying the function to the system
+\begin{align*}
+x+y & = 0 \\
+x^2 + 2y^2 -2 & = 0,
+\end{align*}
+with initial guess $(x_0, y_0) = (1,1)$ gives $(x,y) = (`r findzero(f, g, fx, fy, gx, gy, 1, 1)`)$. We can analytically solve this system of equations to check wether this is the correct answer.
+\begin{align*}
+x+y = 0 & \implies y = -x \\
+x^2 + 2y^2 - 2 = 0 & \implies x^2 +2(-x)^2 -2 \\
+  & \implies 3x^2 = 2 \\
+  & \implies x = \pm \sqrt{\frac{2}{3}} \\
+y = -x & \implies y = \mp \sqrt{\frac{2}{3}}
+\end{align*}
+The numerically found answer corresponds with the answer $(x,y) = (-\sqrt{\frac{2}{3}}, \sqrt{\frac{2}{3}}) \approx (`r c(-sqrt(2/3),sqrt(2/3))`)$.
 
-  \item
-Now, $\binom{4}{2} = `r binom.coef(4,2)`$ and $\binom{50}{20} = `r binom.coef(50,20)`$, as before. Sadly, while the giant number of $5000!$ is no longer an issue, the value of $\binom{5000}{2000}$ itself is still too big for R (as the output is $\binom{5000}{2000} = `r binom.coef(5000,2000)`$).
 \eenum
 
 \newpage
@@ -298,53 +378,55 @@ Now, $\binom{4}{2} = `r binom.coef(4,2)`$ and $\binom{50}{20} = `r binom.coef(50
 
 ## Exercise 1
 
-As mentioned in the exercise, the pattern is indeed striking: \newline
-```{r RANDU}
-n <- 3000000
-results <- numeric(n)
-x <- 123
-for(i in 1:n) {
-  x <- (65539*x) %% (2^31)
-  results[i] <- x/(2^31)
-}
-
-results.round <- round(results,3)
-results.matrix <- matrix(results.round, ncol = 3, byrow = TRUE)
-
-par(mfrow = c(3,3))
-
-for (i in (1:9)/10) {
-  x <- i
-  results.matrix.rowx <- results.matrix[results.matrix[,1] == x,]
-  plot(results.matrix.rowx[,2], results.matrix.rowx[,3], main = paste("x = ",i) ,xlab = "column 2", ylab = "column 3")
+```{r directpoly, echo=TRUE}
+directpoly <- function(x, vec.coef){
+  n <- length(vec.coef)
+  m <- length(x)
+  powers <- matrix(rep(0,n*m), nrow = m)
+  evaluation <- rep(0,m)
+  for (i in 1:m){
+    for(j in 1:n){
+     powers[i,j] <- x[i]^(j-1)
+    }
+    evaluation[i] <- sum(vec.coef * powers[i,])
+  }
+  return(evaluation)
 }
 ```
 
 ## Exercise 2
 
-```{r directpoly, echo=TRUE}
-directpoly <- function(x, vec.coef){
-  n <- length(vec.coef)
-  powers <- c()
-  for(i in 1:n){
-    powers[i] <- x^(i-1)
-  }
-  evaluation <- sum(vec.coef * powers)
-  return(evaluation)
-}
-```
-
-## Exercise 3
-
 ```{r hornerpoly, echo=TRUE}
 hornerpoly <- function(x, vec.coef){
   n <- length(vec.coef)
-  a <- c(numeric(n-1), vec.coef[n])
-  for (i in (n-1):1) {
-    a[i] <- a[i+1]*x + vec.coef[i]
+  m <- length(x)
+  a <- matrix(rep(c(numeric(n-1), vec.coef[n]),m), nrow = m, byrow = TRUE)
+  for(i in 1:m){
+    for (j in (n-1):1) {
+      a[i,j] <- a[i,j+1]*x[i] + vec.coef[j]
+    }
   }
-  return(a[1])
+  return(a[,1])
 }
 ```
 
 To test the function, we try the polynomial $P(x) = 3x^2 + 2x + 1$ evaluated at $x=2$. This should result in $3*2^2 + 2*2 + 1 = 17$. Indeed, the function $hornerpoly(2, c(1,2,3))$ does output `r hornerpoly(2, c(1,2,3))`.
+
+## Exercise 3
+
+\benum[(a)]
+  \item
+The $hornerpoly$ function seems to be more efficient than the $directpoly$ function.
+```{r comparison}
+system.time(directpoly(x=seq(-10,10,length = 5000000), c(1,-2,2,3,4,6,7)))
+system.time(hornerpoly(x=seq(-10,10,length = 5000000), c(1,-2,2,3,4,6,7)))
+```
+
+  \item
+The total time for both methods significantly decreases for smaller polynomials.
+```{r comparison2}
+system.time(directpoly(x=seq(-10,10,length = 5000000), c(-3,17,2)))
+system.time(hornerpoly(x=seq(-10,10,length = 5000000), c(-3,17,2)))
+```
+
+\eenum
